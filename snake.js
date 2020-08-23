@@ -1,16 +1,20 @@
 function init() {
   canvas = document.getElementById('mycanvas');
   W = canvas.width = 1500;
-  H = canvas.height = 720;
+  H = canvas.height = 680;
   pen = canvas.getContext('2d');
-  cs = 67;
+  cs = 66;
+  game_over = false;
+
+  food_img = new Image();
+
+  food = getRandomFood();
 
   snake = {
     init_len: 5,
-    colour: 'red',
+    colour: 'blue',
     cells: [],
     direction: 'right',
-    speed: 50,
     createSnake: function () {
       for (var i = this.init_len; i > 0; i--) {
         this.cells.push({ x: i, y: 0 });
@@ -29,9 +33,17 @@ function init() {
     },
     updateSnake: function () {
       console.log('Updating snake according to direction property');
-      this.cells.pop();
+
       var headX = this.cells[0].x;
       var headY = this.cells[0].y;
+
+      if (headX == food.x && headY == food.y) {
+        console.log('Food eaten !');
+        food = getRandomFood();
+      } else {
+        this.cells.pop();
+      }
+      //this.cells.pop();
       var nextX, nextY;
       if (this.direction == 'right') {
         nextX = headX + 1;
@@ -42,11 +54,23 @@ function init() {
       } else if (this.direction == 'down') {
         nextX = headX;
         nextY = headY + 1;
-      } else if (this.direction == 'up') {
+      } else {
         nextX = headX;
         nextY = headY - 1;
       }
       this.cells.unshift({ x: nextX, y: nextY });
+
+      var last_x = Math.round(W / cs);
+      var last_y = Math.round(H / cs);
+
+      if (
+        this.cells[0].y + 1 < 0 ||
+        this.cells[0].x + 1 < 0 ||
+        this.cells[0].x > last_x ||
+        this.cells[0].y > last_y
+      ) {
+        game_over = true;
+      }
     },
   };
   snake.createSnake();
@@ -69,6 +93,8 @@ function init() {
 function draw() {
   pen.clearRect(0, 0, W, H);
   snake.drawSnake();
+  pen.fillStyle = food.colour;
+  pen.fillRect(food.x * cs, food.y * cs, cs, cs);
 }
 
 function update() {
@@ -76,10 +102,26 @@ function update() {
   snake.updateSnake();
 }
 
+function getRandomFood() {
+  var foodX = Math.round((Math.random() * (W - 50 - cs)) / cs);
+  var foodY = Math.round((Math.random() * (H - 50 - cs)) / cs);
+
+  var food = {
+    x: foodX,
+    y: foodY,
+    colour: 'red',
+  };
+  return food;
+}
+
 function gameloop() {
   draw();
   update();
+  if (game_over == true) {
+    clearInterval(f);
+    alert('Game Over !');
+  }
 }
 
 init();
-var f = setInterval(gameloop, 150);
+var f = setInterval(gameloop, 100);
