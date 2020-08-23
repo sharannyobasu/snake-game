@@ -1,12 +1,16 @@
 function init() {
   canvas = document.getElementById('mycanvas');
   W = canvas.width = 1500;
-  H = canvas.height = 680;
+  H = canvas.height = 580;
   pen = canvas.getContext('2d');
   cs = 66;
   game_over = false;
+  score = 0;
+  var fail = document.getElementById('failmusic');
+  //fail = new sound('assets/fail.mp3');
 
   food_img = new Image();
+  food_img.src = 'assets/apple.png';
 
   food = getRandomFood();
 
@@ -40,6 +44,7 @@ function init() {
       if (headX == food.x && headY == food.y) {
         console.log('Food eaten !');
         food = getRandomFood();
+        score++;
       } else {
         this.cells.pop();
       }
@@ -70,6 +75,8 @@ function init() {
         this.cells[0].y > last_y
       ) {
         game_over = true;
+
+        fail.play();
       }
     },
   };
@@ -94,7 +101,11 @@ function draw() {
   pen.clearRect(0, 0, W, H);
   snake.drawSnake();
   pen.fillStyle = food.colour;
-  pen.fillRect(food.x * cs, food.y * cs, cs, cs);
+  pen.drawImage(food_img, food.x * cs, food.y * cs, cs, cs);
+  pen.fillStyle = 'black';
+
+  pen.font = '50px Verdana';
+  pen.fillText('Score : ' + score, 20, 60);
 }
 
 function update() {
@@ -119,7 +130,10 @@ function gameloop() {
   update();
   if (game_over == true) {
     clearInterval(f);
-    alert('Game Over !');
+    alert('Game Over ! Your score is : ' + score);
+    if (window.confirm('Want to play again ?')) {
+      location.reload();
+    }
   }
 }
 
