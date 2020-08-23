@@ -7,6 +7,8 @@ function init() {
   game_over = false;
   score = 0;
   var fail = document.getElementById('failmusic');
+  var point = document.getElementById('point');
+  var tenpts = document.getElementById('ten');
   //fail = new sound('assets/fail.mp3');
 
   food_img = new Image();
@@ -45,6 +47,11 @@ function init() {
         console.log('Food eaten !');
         food = getRandomFood();
         score++;
+        if (score % 10 == 0) {
+          tenpts.play();
+        } else {
+          point.play();
+        }
       } else {
         this.cells.pop();
       }
