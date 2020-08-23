@@ -5,11 +5,18 @@ function init() {
   pen = canvas.getContext('2d');
   cs = 66;
   game_over = false;
+
   score = 0;
   var fail = document.getElementById('failmusic');
   var point = document.getElementById('point');
   var tenpts = document.getElementById('ten');
+  var back = document.getElementById('bg');
+  document.getElementById('bg').volume = 0.2;
   //fail = new sound('assets/fail.mp3');
+
+  if (game_over != true) {
+    back.play();
+  }
 
   food_img = new Image();
   food_img.src = 'assets/apple.png';
@@ -82,6 +89,7 @@ function init() {
         this.cells[0].y > last_y
       ) {
         game_over = true;
+        back.pause();
 
         fail.play();
       }
@@ -137,6 +145,7 @@ function gameloop() {
   update();
   if (game_over == true) {
     clearInterval(f);
+
     alert('Game Over ! Your score is : ' + score);
     if (window.confirm('Want to play again ?')) {
       location.reload();
